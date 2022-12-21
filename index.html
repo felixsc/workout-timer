@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@900&display=swap" rel="stylesheet">
+    <style> @import url('https://fonts.googleapis.com/css2?family=Chivo+Mono:wght@900&display=swap'); </style>
+    <style>
+        [x-cloak] { display: none !important; }
+        .font-counter {
+            font-family: 'Chivo Mono', monospace;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+<div x-data="timer" class="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 z-10 overflow-y-auto" :class="{'bg-green-200': isRunning && !isPause, 'bg-red-200': isRunning && isPause}">
+        <div class="flex min-h-full items-end justify-center text-center sm:items-center sm:p-0">
+            <div class="relative overflow-hidden rounded-lg text-left w-screen h-screen sm:w-full lg:max-w-md lg:p-12">
+                <div class="flex flex-col items-center justify-between h-full gap-y-4">
+                    <div></div>
+                    <div>
+                        <span class="text-8xl sm:text-9xl font-black font-counter text-slate-800"
+                              :class="{'text-green-800': isRunning && !isPause, 'text-red-800': isRunning && isPause}"
+                              x-text="time"
+                        >00:00</span>
+                    </div>
+                    <div class="w-full grid grid-cols-3 h-28 bg-slate-50 text-slate-500">
+                        <button x-on:click="start()" x-show="!isRunning" class="inline-flex justify-center items-center px-4 py-2 rounded-l border-4 border-slate-400 hover:text-slate-700 hover:border-slate-500 hover:bg-slate-50">
+                            <svg class="h-16 w-16 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg>
+                        </button>
+
+                        <button x-on:click="stop()" x-show="isRunning" x-cloak class="inline-flex justify-center items-center px-4 py-2 rounded-l border-4 border-slate-400 hover:text-slate-700 hover:border-slate-500 hover:bg-slate-50">
+                            <svg class="h-16 w-16 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"/></svg>
+                        </button>
+
+                        <button x-on:click="reset()" class="inline-flex justify-center items-center px-4 py-2 border-y-4 border-slate-400 hover:text-slate-700 hover:border-slate-500 hover:bg-slate-50">
+                            <svg class="h-16 w-16 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M48.5 224H40c-13.3 0-24-10.7-24-24V72c0-9.7 5.8-18.5 14.8-22.2s19.3-1.7 26.2 5.2L98.6 96.6c87.6-86.5 228.7-86.2 315.8 1c87.5 87.5 87.5 229.3 0 316.8s-229.3 87.5-316.8 0c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0c62.5 62.5 163.8 62.5 226.3 0s62.5-163.8 0-226.3c-62.2-62.2-162.7-62.5-225.3-1L185 183c6.9 6.9 8.9 17.2 5.2 26.2s-12.5 14.8-22.2 14.8H48.5z"/></svg>
+                        </button>
+
+                        <button x-on:click="settings.open = true" class="inline-flex justify-center items-center px-4 py-2 rounded-r border-4 border-slate-400 hover:text-slate-700 hover:border-slate-500 hover:bg-slate-50">
+                            <svg class="h-16 w-16 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336c44.2 0 80-35.8 80-80s-35.8-80-80-80s-80 35.8-80 80s35.8 80 80 80z"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="hidden">
+                        <audio x-ref="bell">
+                            <source src="./sounds/beep.wav" type="audio/mpeg" />
+                        </audio>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="settings.open" x-cloak class="h-screen w-screen z-20 absolute top-0 left-0 bg-slate-100">
+            <div class="flex flex-col items-center">
+                <div class="w-full flex justify-start">
+                    <button x-on:click="settings.open = false" class="px-6 py-3 rounded-lg hover:bg-slate-200 hover:text-slate-800 text-slate-600">
+                        <svg class="h-12 w-12 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+                    </button>
+                </div>
+
+                <div class="sm:flex sm:flex-row sm:flex-wrap sm:gap-x-6 sm:max-w-lg gap-y-4">
+                    <div class="flex-1">
+                        <label for="workout.minutes" class="block text-4xl font-medium text-slate-700">Workout</label>
+                        <div class="flex items-center mt-2">
+                            <input x-model.number="settings.workout.minutes" type="number" min="0" max="60" name="workout.minutes" class="text-center font-medium rounded-lg px-4 py-2 text-5xl w-28">
+                            <span class="text-xl mx-1 font-bold">:</span>
+                            <input x-model.number="settings.workout.seconds" type="number" min="0" max="60" name="workout.seconds" class="text-center font-medium rounded-lg px-4 py-2 text-5xl w-28">
+                        </div>
+                    </div>
+
+                    <div class="flex-1 mt-6 sm:mt-0">
+                        <label for="pause.minutes" class="block text-4xl font-medium text-slate-700">Pause</label>
+                        <div class="flex items-center mt-2">
+                            <input x-model.number="settings.pause.minutes" type="number" min="0" max="60" name="pause.minutes" class="text-center font-medium rounded-lg px-4 py-2 text-5xl w-28">
+                            <span class="text-xl mx-1 font-bold">:</span>
+                            <input x-model.number="settings.pause.seconds" type="number" min="0" max="60" name="pause.seconds" class="text-center font-medium rounded-lg px-4 py-2 text-5xl w-28">
+                        </div>
+                    </div>
+
+                    <div class="w-full flex items-center gap-x-4">
+                        <button x-on:click="settings.notification.volume = 0" x-show="settings.notification.volume !== 0" class="p-4 rounded-lg hover:bg-slate-200">
+                            <svg class="h-16 w-16 text-slate-700 hover:text-slate-800 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M333.1 34.8C344.6 40 352 51.4 352 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L163.8 352H96c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L298.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3zm172 72.2c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C507.3 341.3 528 301.1 528 256s-20.7-85.3-53.2-111.8c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zm-60.5 74.5C466.1 199.1 480 225.9 480 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C425.1 284.4 432 271 432 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5z"/></svg>
+                        </button>
+
+                        <button x-on:click="settings.notification.volume = 80" x-show="settings.notification.volume === 0" x-cloak="" class="p-4 rounded-lg hover:bg-slate-200">
+                            <svg class="h-16 w-16 text-slate-700 hover:text-slate-800 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Pro 6.2.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7l-88-69C582.8 365 608 313.4 608 256c0-60.1-27.7-113.8-70.9-149c-10.3-8.4-25.4-6.8-33.8 3.5s-6.8 25.4 3.5 33.8C539.3 170.7 560 210.9 560 256s-20.7 85.3-53.2 111.8c-.9 .7-1.7 1.5-2.4 2.3l-43.6-34.2c5.5 .1 11.1-1.6 15.7-5.4C498.1 312.9 512 286.1 512 256s-13.9-56.9-35.4-74.5c-10.3-8.4-25.4-6.8-33.8 3.5s-6.8 25.4 3.5 33.8C457.1 227.6 464 241 464 256s-6.9 28.4-17.7 37.3c-7.6 6.2-10.4 16-8 24.9L384 275.7V64c0-12.6-7.4-24-18.9-29.2s-25-3.1-34.4 5.3l-115.9 103L38.8 5.1zM64 224v64c0 35.3 28.7 64 64 64h67.8L330.7 471.9c9.4 8.4 22.9 10.4 34.4 5.3S384 460.6 384 448V398.5L93.8 169.9C75.9 181.2 64 201.2 64 224z"/></svg>
+                        </button>
+
+
+                        <div class="flex flex-col w-full">
+                            <label for="default-range" class="block mb-2 text-xl font-medium text-gray-900 dark:text-white">Volume</label>
+                            <input x-model.number="settings.notification.volume" id="default-range" type="range" value="50" min="0" max="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('timer', () => ({
+                isRunning: false,
+                startTime: 0,
+                overallTime: 0,
+                time: '00:00',
+                interval: null,
+                loopWithPause: true,
+                isPause: false,
+                settings: Alpine.$persist({
+                    open: false,
+                    workout: {
+                        minutes: 0,
+                        seconds: 40,
+                    },
+                    pause: {
+                        minutes: 0,
+                        seconds: 20,
+                    },
+                    notification: {
+                        volume: 0.8,
+                    }
+                }),
+                init () {
+                    this.overallTime = this.countdownInSeconds() * 1000;
+                    this.time = new Date(this.overallTime).toISOString().slice(14, 19)
+
+                    this.$watch('settings', (v) => this.reset())
+                    this.$watch('settings.notification.volume', (v) => {
+                        this.$refs.bell.volume = this.settings.notification.volume / 100;
+                    })
+                },
+                _getTimeElapsedSinceLastStart () {
+                    if (!this.startTime) {
+                        return 0;
+                    }
+                    return Date.now() - this.startTime;
+                },
+                start () {
+                    if (this.isRunning) {
+                        return console.error('Timer is already running');
+                    }
+
+                    this.isRunning = true;
+
+                    this.startTime = Date.now();
+
+                    this.interval = setInterval(() => {
+                        this.updateTime();
+                    }, 100);
+                },
+                stop () {
+                    if (!this.isRunning) {
+                        return console.error('Timer is already stopped');
+                    }
+
+                    this.isRunning = false;
+                    clearInterval(this.interval);
+
+                    this.overallTime = this.overallTime - this._getTimeElapsedSinceLastStart();
+                },
+                reset () {
+                    this.overallTime = this.countdownInSeconds() * 1000;
+                    this.isRunning = false;
+                    this.isPause = false;
+
+                    if (this.isRunning) {
+                        this.startTime = Date.now();
+                        return;
+                    }
+
+                    this.startTime = 0;
+                    this.updateTime();
+                },
+                getTime () {
+                    if (!this.startTime) {
+                        return 0;
+                    }
+
+                    if (this.isRunning) {
+                        return this.overallTime / 1000 + this._getTimeElapsedSinceLastStart();
+                    }
+
+                    return this.overallTime / 1000;
+                },
+                updateTime() {
+                    const newTime = this.overallTime / 1000 - Math.round(this.getTime() / 1000);
+
+                    /**
+                     * Is finished?
+                     */
+                    if (newTime <= 0) {
+                        /**
+                         * Reset timer
+                         */
+                        this.time = new Date(0).toISOString().slice(14, 19);
+
+                        /**
+                         * Notify end of interval
+                         */
+                        clearInterval(this.interval)
+                        this.isRunning = false;
+                        this.$refs.bell.play();
+
+                        if (this.loopWithPause) {
+                            this.isPause = !this.isPause;
+                            this.overallTime = this.isPause ? this.pauseInSeconds() * 1000 : this.countdownInSeconds() * 1000;
+                            this.start();
+                        }
+
+                        return;
+                    }
+
+                    this.time = new Date(newTime * 1000).toISOString().slice(14, 19);
+                },
+                countdownInSeconds() {
+                    return this.settings.workout.minutes * 60 + this.settings.workout.seconds;
+                },
+                pauseInSeconds() {
+                    return this.settings.pause.minutes * 60 + this.settings.pause.seconds;
+                }
+            }))
+        })
+    </script>
+</body>
+</html>
